@@ -50,6 +50,9 @@ When('User navigates to the account overview page', async () => {
     await accountServicePage.accountOverViewLink();
 });
 
-Then('User should be able to view the account balance', async () => {
+Then('User should be able to view the account balance', async ({ page }) => {
     await accountsOverviewPage.getBalance();
+    await page.screenshot({
+        path: 'screenshots/account-balance.png'
+    });
 });
