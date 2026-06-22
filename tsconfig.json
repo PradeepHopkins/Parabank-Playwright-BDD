@@ -4,8 +4,10 @@
     "module": "es2022",
     "strict": true,
     "esModuleInterop": true,
+    "outDir": "./dist",
     "types": [
       "node"
     ]
-  }
+  },
+  "include": ["steps/**/*.ts", "features/**/*.ts"]
 }
