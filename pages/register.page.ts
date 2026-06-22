@@ -87,7 +87,15 @@ export class RegisterPage {
         await this.page.locator('[id="customer.username"]').fill(userName);
         await this.page.locator('[id="customer.password"]').fill(password);
         await this.page.locator('[id="repeatedPassword"]').fill(password);
-        await this.page.getByRole('button', { name: 'Register' }).click();
+        
+        // Wait for navigation after clicking Register
+        await Promise.all([
+            this.page.waitForNavigation({ waitUntil: 'networkidle' }),
+            this.page.getByRole('button', { name: 'Register' }).click()
+        ]);
+        
+        // Wait for success message to appear
+        await this.page.locator('#rightPanel p').waitFor({ state: 'visible', timeout: 5000 });
     }
 
 }

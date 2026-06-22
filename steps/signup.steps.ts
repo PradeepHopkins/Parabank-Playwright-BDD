@@ -6,52 +6,50 @@ import { AccountServicePage } from '../pages/account-service.page';
 import { createUserData } from '../utils/logger.utils';
 import { expect } from '@playwright/test';
 
+const { Given, When, Then } = createBdd();
+
 let registerPage: RegisterPage;
 let homePage: HomePage;
 let accountServicePage: AccountServicePage;
 let accountsOverviewPage: AccountsOverviewPage;
 
-const { Given, When, Then } = createBdd();
-
 Given('User launches the ParaBank application', async ({ page }) => {
-
     await page.goto('');
+    homePage = new HomePage(page);
+    registerPage = new RegisterPage(page);
+    accountServicePage = new AccountServicePage(page);
+    accountsOverviewPage = new AccountsOverviewPage(page);
 });
 
-When('User navigates to the registration page', async ({ page }) => {
-    homePage = new HomePage(page);
+When('User navigates to the registration page', async () => {
     await homePage.registerLink();
 });
 
-When('User submits the registration form with valid details', async ({ page }) => {
-    registerPage = new RegisterPage(page);
+When('User submits the registration form with valid details', async () => {
+    const userData = createUserData();
     await registerPage.registerNewUser(
-        createUserData().firstName,
-        createUserData().lastName,
-        createUserData().address,
-        createUserData().city,
-        createUserData().state,
-        createUserData().zipCode,
-        createUserData().phone,
-        createUserData().ssn,
-        createUserData().username,
-        createUserData().password
+        userData.firstName,
+        userData.lastName,
+        userData.address,
+        userData.city,
+        userData.state,
+        userData.zipCode,
+        userData.phone,
+        userData.ssn,
+        userData.username,
+        userData.password
     );
 });
 
 Then('the account should be created successfully', async ({ page }) => {
-    accountServicePage = new AccountServicePage(page);
-    expect(accountServicePage.getloginSuccessfullLog())
-        .toHaveText('Your account was created successfully. You are now logged in.');
+    await page.waitForLoadState('networkidle');
+    await expect(accountServicePage.getloginSuccessfullLog()).toContainText('Your account was created successfully. You are now logged in.');
 });
 
-When('User navigates to the account overview page', async ({ page }) => {
-    accountServicePage = new AccountServicePage(page);
+When('User navigates to the account overview page', async () => {
     await accountServicePage.accountOverViewLink();
 });
 
-Then('User should be able to view the account balance', async ({ page }) => {
-    accountsOverviewPage = new AccountsOverviewPage(page);
+Then('User should be able to view the account balance', async () => {
     await accountsOverviewPage.getBalance();
 });
-
